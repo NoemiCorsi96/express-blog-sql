@@ -18,25 +18,49 @@ function index(req, res) {
 
 
 //show
-const show = (req, res) => {
+function show(req, res) {
 
     const { id } = req.params
     console.log(id);
+    //creo la variabile con la query SQL 
+    const sql = 'SELECT * FROM posts WHERE id=?'
+    const tagSql = 'SELECT tags.label FROM tags JOIN post_tag ON post_tag.tag_id=tags.id WHERE post_id=?'
+    console.log(sql);
+    connection.query(sql, [id], (err, results) => {
+        //gestire errore lato server
+        if (err) return res.status(500).json({ error: err.message })
+        // 3.1 gestire un eventuale errore 404 se il post con l'id fornito non viene trovata 
+        if (results.length === 0) return res.status(404).json({ error: 'Post not found' })
+        //console.log(results);
+
+        //chiama il metodo query sull'oggetto connection una seconda volta per la sql di ricerca dei tag
+        connection.query(tagSql, [id], (err, tagsResults) => {
+            //gestire errore lato server
+            if (err) return res.status(500).json({ error: err.message })
+
+            //Crea un nuovo oggetto post con tutto il contenuto dell'oggetto dal db, piu la lista dei tag
+            const postObj = { ...results[0], tags: tagsResults.map(tag => tag.label) }
 
 
-    const post = posts.find(item => item.id === parseInt(id))
-    console.log(post);
+            // 👉 Send the response back to the user
+            // pizza object
+            res.json(postObj)
 
-    if (!post) {
-
-        res.status(404).json({
-            error: true,
-            message: 'Resource not found'
         })
-    }
+    })
+    //const post = posts.find(item => item.id === parseInt(id))
+    //console.log(post);
+
+    //if (!post) {
+
+    // res.status(404).json({
+    // error: true,
+    // message: 'Resource not found'
+    // })
+    //}
 
     //res.send('Show the single pizza with ID:' + req.params.id)
-    res.json(post)
+    // res.json(post)
 
 }
 
