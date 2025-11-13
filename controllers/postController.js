@@ -1,12 +1,21 @@
-//Milestone 1
-
 const posts = require('../data/post')
+//Vado ad importare connection 
+const connection = require('../data/db')
 
 //index 
-const index = (req, res) => {
+function index(req, res) {
+    //creo la variabile con la query SQL
+    const sql = 'SELECT * FROM blog.posts;'
+    //chiamo il metodo query sull'oggetto connection
+    connection.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: err.message })
+        //console.log(err);
+        //console.log(results);
+        res.json(results);
+    })
 
-    res.json(posts)
 }
+
 
 //show
 const show = (req, res) => {
