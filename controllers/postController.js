@@ -48,19 +48,6 @@ function show(req, res) {
 
         })
     })
-    //const post = posts.find(item => item.id === parseInt(id))
-    //console.log(post);
-
-    //if (!post) {
-
-    // res.status(404).json({
-    // error: true,
-    // message: 'Resource not found'
-    // })
-    //}
-
-    //res.send('Show the single pizza with ID:' + req.params.id)
-    // res.json(post)
 
 }
 
@@ -122,28 +109,18 @@ const modify = (req, res) => {
 }
 
 //destroy
-
-const destroy = (req, res) => {
+function destroy(req, res) {
     const { id } = req.params
     console.log(id);
+    const sql = 'DELETE FROM posts WHERE id=?'
+    connection.query(sql, [id], (err) => {
+        if (err) return res.status(500).json({ error: err.message })
+        res.sendStatus(204)
+    })
 
-
-    const post = posts.find(item => item.id === parseInt(id))
-    console.log(post);
-
-    if (!post) {
-
-        return res.status(404).json({
-            error: true,
-            message: 'Resource not found'
-        })
-    }
-
-    posts.splice(posts.indexOf(post), 1);
-    console.log(posts);
-
-    res.sendStatus(204)
 }
+
+
 
 
 //esporto le azioni 
